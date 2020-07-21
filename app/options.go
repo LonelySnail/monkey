@@ -9,8 +9,8 @@ type OptionFn func(opt *Options)
 type Options struct {
 	version       string
 	appType       string
-	tcpAddr        string
-	wsAddr		string
+	tcpAddr       string
+	wsAddr        string
 	SerializeType byte
 }
 
@@ -25,11 +25,11 @@ func newOptions(opts ...OptionFn) *Options {
 	return newOpt
 }
 
-func SetAppVersion(ver string) OptionFn{
+func SetAppVersion(ver string) OptionFn {
 	return func(opt *Options) { opt.version = ver }
 }
 
-func (opts *Options)GetAppVersion() string{
+func (opts *Options) GetAppVersion() string {
 	return opts.version
 }
 
@@ -41,16 +41,16 @@ func (opts *Options) GetAppType() string {
 	return opts.appType
 }
 
-func SetTcpAddr(addr string) OptionFn  {
-	return func(opts *Options) {opts.tcpAddr= addr}
+func SetTcpAddr(addr string) OptionFn {
+	return func(opts *Options) { opts.tcpAddr = addr }
 }
 
 func (opts *Options) GetTcpAddr() string {
 	return opts.appType
 }
 
-func SetWsAddr(addr string)  OptionFn{
-	return func(opts *Options) {opts.wsAddr= addr}
+func SetWsAddr(addr string) OptionFn {
+	return func(opts *Options) { opts.wsAddr = addr }
 }
 
 func (opts *Options) GetWSAddr() string {

@@ -2,14 +2,16 @@ package rpc
 
 import (
 	"context"
+	"github.com/LonelySnail/monkey/agent"
 	"sync"
 	"time"
 )
 
 type CallMsg struct {
-	Seq       uint64
-	SessionId string
-	ReplyTo   string
+	Seq     uint64
+	Payload interface{}
+	Session *agent.Session
+	ReplyTo string
 }
 
 type IRpcClient interface {
@@ -76,7 +78,6 @@ func (r *Rpc) getSeq() uint64 {
 	r.seq++
 	return seq
 }
-
 
 ////  需要等待返回值
 //func (r *Rpc) Call(session iface.ISession, msg *codec.Message) (err error) {

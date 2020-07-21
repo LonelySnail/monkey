@@ -10,15 +10,15 @@ type Option func(*Options)
 
 //Options 网关配置项
 type Options struct {
-	BufSize         int
-	MaxPackSize     int
-	TLS             bool
-	TCPAddr         string
-	WsAddr          string
-	CertFile        string
-	KeyFile         string
-	Heartbeat       time.Duration
-	OverTime        time.Duration
+	BufSize     int
+	MaxPackSize int
+	TLS         bool
+	TCPAddr     string
+	WsAddr      string
+	CertFile    string
+	KeyFile     string
+	Heartbeat   time.Duration
+	OverTime    time.Duration
 	AgentLearner
 }
 
@@ -30,11 +30,11 @@ type AgentLearner interface {
 //NewOptions 网关配置项
 func newOptions(opts ...Option) *Options {
 	opt := &Options{
-		BufSize:         2048,
-		MaxPackSize:     65535,
-		Heartbeat:       time.Minute,
-		OverTime:        time.Second * 10,
-		TLS:             false,
+		BufSize:     2048,
+		MaxPackSize: 65535,
+		Heartbeat:   time.Minute,
+		OverTime:    time.Second * 10,
+		TLS:         false,
 	}
 
 	for _, o := range opts {

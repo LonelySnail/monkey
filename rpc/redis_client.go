@@ -2,8 +2,8 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/LonelySnail/ppgo/logger"
-	"github.com/LonelySnail/ppgo/utils"
+	"github.com/LonelySnail/monkey/logger"
+	"github.com/LonelySnail/monkey/util"
 	"github.com/gomodule/redigo/redis"
 	"go.uber.org/zap"
 	"runtime"
@@ -37,7 +37,7 @@ func NewRedisClient(queueName, url string) (*RedisClient, error) {
 	client.timeoutDone = make(chan error)
 	client.closed = false
 	client.ch = make(chan int, 100)
-	pool, err := utils.GetRedisPool(url)
+	pool, err := util.GetRedisPool(url)
 	if err != nil {
 		logger.ZapLog.Fatal(err.Error())
 		return nil, err
@@ -108,6 +108,7 @@ LLForEnd:
 
 //  需要等回复
 func (c *RedisClient) Call() error {
+
 	return nil
 }
 

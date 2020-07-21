@@ -1,27 +1,27 @@
 package app
 
 import (
+	"flag"
 	"fmt"
+	"github.com/LonelySnail/monkey/logger"
+	"github.com/LonelySnail/monkey/module"
 	"github.com/LonelySnail/monkey/service"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"flag"
-	"github.com/LonelySnail/monkey/module"
-	"github.com/LonelySnail/monkey/logger"
 )
 
 type DefaultApp struct {
-	service   *service.Service
-	options   *Options
-	mods   []module.Module
+	service *service.Service
+	options *Options
+	mods    []module.Module
 }
 
-func NewDefaultApp(opts ...OptionFn) *DefaultApp{
+func NewDefaultApp(opts ...OptionFn) *DefaultApp {
 	app := new(DefaultApp)
 	options := new(Options)
-	for _,opt := range opts {
+	for _, opt := range opts {
 		opt(options)
 	}
 
@@ -30,19 +30,19 @@ func NewDefaultApp(opts ...OptionFn) *DefaultApp{
 	return app
 }
 
-func (app *DefaultApp)Start(mods ...module.Module) {
-	typ := flag.String("typ","","server type")
+func (app *DefaultApp) Start(mods ...module.Module) {
+	typ := flag.String("typ", "", "server type")
 	flag.Parse()
-	err :=app.runMods(*typ,mods...)
+	err := app.runMods(*typ, mods...)
 	if err != nil {
 		panic(err)
 	}
 	app.OnInit()
 }
 
-func(app *DefaultApp)runMods(typ string,mods ...module.Module)error{
-	for _,mod := range mods {
-		app.mods = append(app.mods,mod)
+func (app *DefaultApp) runMods(typ string, mods ...module.Module) error {
+	for _, mod := range mods {
+		app.mods = append(app.mods, mod)
 		//if typ == "" || mod.GetType() == typ {
 		//	err := mod.OnInit(app)
 		//	if err != nil {
@@ -54,19 +54,19 @@ func(app *DefaultApp)runMods(typ string,mods ...module.Module)error{
 	return nil
 }
 
-func (app *DefaultApp)OnInit(){
+func (app *DefaultApp) OnInit() {
 	for _, mod := range app.mods {
 		mod.OnInit(app)
 
 	}
 	app.RegisterGo()
-		// close
+	// close
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
 	sig := <-c
 
 	//如果一分钟都关不了则强制关闭
-	timeout := time.NewTimer(1*time.Minute)
+	timeout := time.NewTimer(1 * time.Minute)
 	wait := make(chan struct{})
 	go func() {
 		app.OnStop()
@@ -81,36 +81,60 @@ func (app *DefaultApp)OnInit(){
 	return
 }
 
-func (app *DefaultApp)GetService()  module.IService{
+func (app *DefaultApp) GetService() *service.Service {
 	return app.service
 }
 
-func (app *DefaultApp)Register()  {
-	for _,server := range app.mods {
-		err :=app.service.Register(server)
+func (app *DefaultApp) Register() {
+	for _, server := range app.mods {
+		err := app.service.Register(server)
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-func (app *DefaultApp)RegisterGo()  {
-	for _,server := range app.mods {
-		err :=app.service.RegisterGo(server)
+func (app *DefaultApp) RegisterGo() {
+	for _, server := range app.mods {
+		err := app.service.RegisterGo(server)
 		if err != nil {
 			panic(err)
 		}
 	}
 }
-func (app *DefaultApp)GetTcpAddr() string {
+func (app *DefaultApp) GetTcpAddr() string {
 	return app.options.tcpAddr
 }
 
-func (app *DefaultApp)GetWSAddr() string {
+func (app *DefaultApp) GetWSAddr() string {
 	return app.options.wsAddr
 }
 
-func (app *DefaultApp)OnStop(){
-	
+func (app *DefaultApp) OnStop() {
+
+}
+
+func (app *DefaultApp) RequestCall(args [][]byte) {
+	//app.service.HandlerRequest(args)
+}
+
+func (app *DefaultApp) RequestCallGetSerializeType()byte{
+	return app.options.SerializeType
+}
+
+func (app *DefaultApp) Invoke(path, method string, args ...interface{}) {
+
+}
+
+func (app *DefaultApp) InvokeNR(path, method string, args ...interface{}) {
+
+}
+
+func (app *DefaultApp) Call(path, method string, args ...interface{}) {
+
+}
+
+func (app *DefaultApp) CallNR(path, method string, args ...interface{}) {
+
 }
 

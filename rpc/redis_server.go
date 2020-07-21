@@ -2,8 +2,8 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/LonelySnail/ppgo/logger"
-	"github.com/LonelySnail/ppgo/utils"
+	"github.com/LonelySnail/monkey/logger"
+	"github.com/LonelySnail/monkey/util"
 	"github.com/gomodule/redigo/redis"
 	"go.uber.org/zap"
 	"runtime"
@@ -18,27 +18,27 @@ type RedisServer struct {
 	closed    bool
 }
 
-func NewRpcServer(queueName, url string) *RedisServer {
+func NewRpcServer(queueName, url string) (*RedisServer, error) {
 	server := new(RedisServer)
 	server.url = url
 	server.queueName = queueName
 	server.done = make(chan error)
-	pool, err := utils.GetRedisPool(url)
+	pool, err := util.GetRedisPool(url)
 	if err != nil {
 		logger.ZapLog.Fatal(err.Error())
-		return nil
+		return nil, err
 	}
 	server.pool = pool
 	server.closed = false
-	go server.requestHandler()
+	go server.RequestHandler()
 
-	return server
+	return server, nil
 }
 
 /**
 接收请求信息
 */
-func (s *RedisServer) requestHandler() {
+func (s *RedisServer) RequestHandler() {
 	defer func() {
 		if r := recover(); r != nil {
 			var rn = ""

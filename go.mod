@@ -6,7 +6,7 @@ require (
 	github.com/apache/thrift v0.13.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
-	github.com/gomodule/redigo v1.8.2 // indirect
+	github.com/gomodule/redigo v1.8.2
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/liangdas/mqant v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
