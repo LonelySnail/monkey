@@ -9,7 +9,7 @@ import (
 
 type Gate struct {
 	app module.IDefaultApp
-	*module.BaseModule
+	module.BaseModule
 	manage     *sessions.SessionManage
 	agentProxy module.ISessionProxy
 	options    *Options

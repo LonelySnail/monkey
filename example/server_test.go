@@ -3,7 +3,6 @@ package example
 import (
 	"fmt"
 	"github.com/LonelySnail/monkey"
-	"github.com/LonelySnail/monkey/agent"
 	"github.com/LonelySnail/monkey/app"
 	"github.com/LonelySnail/monkey/gate"
 	//"github.com/LonelySnail/monkey/iface"
@@ -16,7 +15,7 @@ type mgate struct {
 }
 
 type Login struct {
-	*module.BaseModule
+	module.BaseModule
 }
 
 func newGate() *mgate {
@@ -39,11 +38,6 @@ func (m *mgate) OnInit(app module.IDefaultApp) error {
 	return nil
 }
 
-func (m *mgate) Login(session *module.IGateSession, name string) (err error) {
-	fmt.Println(name,"666666")
-
-	return
-}
 
 func (l *Login) GetName() string {
 	return "login"
@@ -54,6 +48,7 @@ func (l *Login) GetType() string {
 }
 
 func (l *Login) OnInit(app module.IDefaultApp) error {
+	//l.BaseModule = new(module.BaseModule)
 	l.BaseModule.OnInit(app)
 	return nil
 }
@@ -61,7 +56,7 @@ func (l *Login) GetApp() module.IDefaultApp {
 	return l.BaseModule.GetApp()
 }
 
-func (l *Login) Login(session *agent.SessionAgent, arg map[string]interface{}) (err error) {
+func (l *Login) Login(session module.IGateSession,arg string) (err error) {
 	fmt.Println(arg, "666666")
 	//a, _ := json.Marshal("hello world")
 	//session.SendMsg(a)

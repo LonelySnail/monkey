@@ -2,7 +2,6 @@ package agent
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"github.com/LonelySnail/monkey/agent/packet"
 	"github.com/LonelySnail/monkey/codec"
@@ -18,7 +17,7 @@ import (
 type Message struct {
 	ServicePath   string
 	ServiceMethod string
-	Payload       interface{}
+	Payload      interface{}
 }
 type Agent struct {
 	conn              network.Conn
@@ -49,6 +48,7 @@ func (a *Agent) OnInit(gt module.IGate) error {
 	a.sendNum = 0
 	a.lastHeartbeatTime = time.Now().UnixNano()
 	a.code = codec.GetCodec(a.app.GetSerializeType())
+	a.gt = gt
 	return nil
 }
 
@@ -62,32 +62,32 @@ func (a *Agent) Run() error {
 		a.Close()
 
 	}()
-	go func() {
-		defer func() {
-			if err := recover(); err != nil {
-				buff := make([]byte, 1024)
-				runtime.Stack(buff, false)
-				logger.ZapLog.Error(fmt.Sprintf("OverTime panic(%v)\n info:%s", err, string(buff)))
-			}
-		}()
-		select {
-		case <-time.After(1 * time.Minute):
-			if a.GetSession() == nil {
-				//超过一段时间还没有建立mqtt连接则直接关闭网络连接
-				a.Close()
-			}
-		}
-	}()
+	//go func() {
+	//	defer func() {
+	//		if err := recover(); err != nil {
+	//			buff := make([]byte, 1024)
+	//			runtime.Stack(buff, false)
+	//			logger.ZapLog.Error(fmt.Sprintf("OverTime panic(%v)\n info:%s", err, string(buff)))
+	//		}
+	//	}()
+	//	select {
+	//	case <-time.After(1 * time.Minute):
+	//		if a.GetSession() == nil {
+	//			//超过一段时间还没有建立mqtt连接则直接关闭网络连接
+	//			a.Close()
+	//		}
+	//	}
+	//}()
 
 	//pack,err := packet.UnPacket(a.r)
 	//if err != nil || pack.Type != packet.CONNECT {
 	//
 	//	return err
 	//}
-	a.gt.Connect(a)
 
 	addr := a.conn.RemoteAddr()
 	a.session = newSession(addr.String(), addr.Network())
+	a.gt.Connect(a)
 	a.listenAndLoop()
 	return nil
 }
@@ -151,7 +151,7 @@ func (a *Agent) handlerMsg(pack *packet.Pack) {
 		if err != nil {
 			return
 		}
-		a.app.Call(msg.ServicePath,msg.ServiceMethod,a.session,msg.Payload)
+		a.app.CallNR(msg.ServicePath,msg.ServiceMethod,a.session,msg.Payload)
 	case packet.DISCONNECT:
 	}
 }

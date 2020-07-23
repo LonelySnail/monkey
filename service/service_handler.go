@@ -1,31 +1,29 @@
 package service
 
 import (
-	"github.com/LonelySnail/monkey/logger"
+	"encoding/json"
+	"fmt"
 	"github.com/LonelySnail/monkey/module"
-	"go.uber.org/zap"
+	"github.com/LonelySnail/monkey/rpc"
+	utils "github.com/LonelySnail/monkey/util"
+
+	//utils "github.com/LonelySnail/monkey/util"
 	"reflect"
-	"runtime"
 	"sync"
 )
-
-type Message struct {
-	ServicePath   string
-	ServiceMethod string
-	Payload       interface{}
-}
 
 // 包括service名、服务对应的接收者、接收者类型、service注册的方法以及注册的函数
 type service struct {
 	app  module.IDefaultApp
 	isGo      bool
-	rpcClient IRpcClient
-	rpcServer IRpcServer
+	rpcClient rpc.IRpcClient
+	rpcServer rpc.IRpcServer
 	name      string                   // name of service
 	rcv       reflect.Value            // receiver of methods for the service
 	typ       reflect.Type             // type of the receiver
 	method    map[string]*methodType   // registered methods
 	function  map[string]*functionType // registered functions
+	ch   chan  []byte
 }
 
 //
@@ -44,66 +42,94 @@ type functionType struct {
 	ReplyType reflect.Type
 }
 
-func (s *service) Call(msg *Message) {
-	defer func() {
-		if r := recover(); r != nil {
-			var rn = ""
-			switch r.(type) {
 
-			case string:
-				rn = r.(string)
-			case error:
-				rn = r.(error).Error()
-			}
-			logger.ZapLog.Error(rn)
-			buff := make([]byte, 1024)
-			runtime.Stack(buff, false)
-			logger.ZapLog.Error(string(buff))
-		}
-	}()
-	mty := s.method[msg.ServiceMethod]
-	if mty == nil {
-		logger.ZapLog.Warn("service method is not exist", zap.String("service method", msg.ServiceMethod))
-		return
+func (s *service) CallNR(method string,argsType []string,args [][]byte)  {
+	msg := &rpc.RpcMsg{
+		ID: utils.UUid(),
+		Method: method,
+		Reply: false,
+		Args: args,
+		ArgsType: argsType,
 	}
 
-	//arg := reflect.ValueOf(msg.Payload)
-	//if mty.ArgType.Kind() == reflect.Ptr {
-	//	arg =  reflect.ValueOf(msg.Payload).Elem()
-	//}
-
-	//s.call(mty,reflect.ValueOf(session),arg)
+	s.rpcClient.CallNR(msg)
 }
 
-func (s *service) call(mty *methodType, args []reflect.Value) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			var rn = ""
-			switch r.(type) {
-
-			case string:
-				rn = r.(string)
-			case error:
-				rn = r.(error).Error()
-			}
-			logger.ZapLog.Error(rn)
-			buff := make([]byte, 1024)
-			runtime.Stack(buff, false)
-			logger.ZapLog.Error(string(buff))
+func (s *service)handler()  {
+	for body := range s.ch {
+		msg := new(rpc.RpcMsg)
+		err := json.Unmarshal(body,msg)
+		if err != nil {
+			continue
 		}
-	}()
+		err = s.call(msg)
+	}
+}
 
-	function := mty.method.Func
+func (s *service)call(msg *rpc.RpcMsg) error {
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		var rn = ""
+	//		switch r.(type) {
+	//
+	//		case string:
+	//			rn = r.(string)
+	//		case error:
+	//			rn = r.(error).Error()
+	//		}
+	//		logger.ZapLog.Error(rn)
+	//		buff := make([]byte, 1024)
+	//		runtime.Stack(buff, false)
+	//		logger.ZapLog.Error(string(buff))
+	//	}
+	//}()
+
+	mty := s.method[msg.Method]
+	if mty == nil {
+		return fmt.Errorf("service [%s] method is not exist",msg.Method)
+	}
+
+	args := msg.Args
+	fn := mty.method.Func
+	in := make([]reflect.Value,len(args)+1)
+	in[0]=s.rcv
+
+	for i,typ := range msg.ArgsType {
+		ty,err := Bytes2Args(nil,typ,args[i])
+		if err != nil {
+			return err
+		}
+		inx := i+1
+		switch v2 := ty.(type) { //多选语句switch
+		case nil:
+			in[inx] = reflect.Zero(fn.Type().In(i))
+		case []uint8:
+			if reflect.TypeOf(ty).AssignableTo(fn.Type().In(i)) {
+				//如果ty "继承" 于接受参数类型
+				in[inx] = reflect.ValueOf(ty)
+			} else {
+				elemp := reflect.New(fn.Type().In(i))
+				err := json.Unmarshal(v2, elemp.Interface())
+				if err != nil {
+					in[inx] = reflect.ValueOf(ty)
+				} else {
+					in[inx] = elemp.Elem()
+				}
+			}
+		default:
+			in[inx] = reflect.ValueOf(ty)
+		}
+	}
+
 	// Invoke the method, providing a new value for the reply.
-	returnValues := function.Call(args)
+	returnValues := fn.Call(in)
 	if len(returnValues) == 0 {
-		return
+		return fmt.Errorf("no returnValues")
 	}
 	// The return value for the method is an error.
 	errInter := returnValues[0].Interface()
 	if errInter != nil {
 		return errInter.(error)
 	}
-
 	return nil
 }

@@ -2,36 +2,24 @@ package rpc
 
 import (
 	"context"
-	"github.com/LonelySnail/monkey/agent"
-	"sync"
 	"time"
 )
 
-type CallMsg struct {
-	Seq     uint64
-	Payload interface{}
-	Session *agent.Session
-	ReplyTo string
-}
-
 type IRpcClient interface {
-	Call(call *CallMsg) error
-	Go(call *CallMsg) error
+	Call(msg *RpcMsg) error
+	CallNR(msg *RpcMsg) error
 }
 
 type IRpcServer interface {
-	//requestHandler(callChan chan *CallMsg)
+
 }
 
-type rpcFunction func(call *CallMsg)
-
-type Rpc struct {
-	pending  sync.Map
-	callChan chan *CallMsg
-	seq      uint64
-	Client   IRpcClient
-	Server   IRpcServer
-	rpcFunc  rpcFunction
+type RpcMsg struct {
+	ID         string
+	Method     string
+	Reply      bool
+	Args       [][]byte
+	ArgsType[]string
 }
 
 func getContext() (ctx context.Context) {
@@ -72,12 +60,6 @@ func getContext() (ctx context.Context) {
 //
 //	return  r,nil
 //}
-
-func (r *Rpc) getSeq() uint64 {
-	seq := r.seq
-	r.seq++
-	return seq
-}
 
 ////  需要等待返回值
 //func (r *Rpc) Call(session iface.ISession, msg *codec.Message) (err error) {

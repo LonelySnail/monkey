@@ -18,7 +18,7 @@ type RedisServer struct {
 	closed    bool
 }
 
-func NewRpcServer(queueName, url string) (*RedisServer, error) {
+func NewRpcServer(queueName, url string,ch chan []byte) (*RedisServer, error) {
 	server := new(RedisServer)
 	server.url = url
 	server.queueName = queueName
@@ -30,7 +30,7 @@ func NewRpcServer(queueName, url string) (*RedisServer, error) {
 	}
 	server.pool = pool
 	server.closed = false
-	go server.RequestHandler()
+	go server.RequestHandler(ch)
 
 	return server, nil
 }
@@ -38,7 +38,7 @@ func NewRpcServer(queueName, url string) (*RedisServer, error) {
 /**
 接收请求信息
 */
-func (s *RedisServer) RequestHandler() {
+func (s *RedisServer) RequestHandler(ch chan []byte) {
 	defer func() {
 		if r := recover(); r != nil {
 			var rn = ""
@@ -61,7 +61,9 @@ func (s *RedisServer) RequestHandler() {
 		defer conn.Close()
 		result, err := conn.Do("brpop", s.queueName, 0)
 		if err == nil && result != nil {
-			fmt.Println(result.([]interface{})[1].([]byte))
+			fmt.Println(string(result.([]interface{})[1].([]byte)),"**********")
+			body := result.([]interface{})[1].([]byte)
+			ch <- body
 			//rpcInfo, err := s.Unmarshal(result.([]interface{})[1].([]byte))
 			//if err == nil {
 			//	fmt.Println()

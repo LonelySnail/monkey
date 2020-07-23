@@ -9,6 +9,7 @@ type IDefaultApp interface {
 	RequestCall(args [][]byte)
 	GetSerializeType()byte
 	Call(path, method string, args ...interface{})
+	CallNR(path, method string, args ...interface{})
 }
 
 type Module interface {

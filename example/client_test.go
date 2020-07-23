@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/LonelySnail/monkey/agent/packet"
-	"github.com/LonelySnail/monkey/service"
 	"net"
 	"testing"
 	"time"
@@ -40,12 +39,18 @@ func TestClient(t *testing.T) {
 	conn.Close()
 }
 
+type Message struct {
+	ServicePath   string
+	ServiceMethod string
+	Payload       interface{}
+}
+
 func pack() []byte {
-	c := map[string]interface{}{"name": "world"}
-	msg := new(service.Message)
+	//c := map[string]interface{}{"name": "world"}
+	msg := new(Message)
 	msg.ServicePath = "login"
 	msg.ServiceMethod = "Login"
-	msg.Payload = c
+	msg.Payload = "898798"
 	a, _ := json.Marshal(msg)
 	b, _ := packet.Packet(packet.DATA, a)
 

@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/LonelySnail/monkey/logger"
 	"github.com/LonelySnail/monkey/util"
@@ -107,12 +108,31 @@ LLForEnd:
 }
 
 //  需要等回复
-func (c *RedisClient) Call() error {
-
+func (c *RedisClient) Call(msg *RpcMsg) error {
+	body,err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	conn := c.pool.Get()
+	defer conn.Close()
+	_,err =conn.Do("lpush",c.queueName,body)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 //  不需要等回复
-func (c *RedisClient) CallNR() error {
+func (c *RedisClient) CallNR(msg *RpcMsg) error {
+	body,err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	conn := c.pool.Get()
+	defer conn.Close()
+	_,err =conn.Do("lpush",c.queueName,body)
+	if err != nil {
+		return err
+	}
 	return nil
 }

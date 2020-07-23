@@ -110,6 +110,10 @@ func (app *DefaultApp) GetWSAddr() string {
 	return app.options.wsAddr
 }
 
+func (app *DefaultApp)GetSerializeType()  byte{
+	return app.options.SerializeType
+}
+
 func (app *DefaultApp) OnStop() {
 
 }
@@ -135,6 +139,6 @@ func (app *DefaultApp) Call(path, method string, args ...interface{}) {
 }
 
 func (app *DefaultApp) CallNR(path, method string, args ...interface{}) {
-
+	app.service.CallNR(path,method,args...)
 }
 

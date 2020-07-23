@@ -9,7 +9,6 @@ import (
 	"github.com/LonelySnail/monkey/rpc"
 	"go.uber.org/zap"
 	"reflect"
-	"runtime"
 	"sync"
 	"unicode"
 	"unicode/utf8"
@@ -75,23 +74,25 @@ func newService(rcv module.Module) (*service, error) {
 	}
 	service.app = rcv.GetApp()
 	service.name = name
-
+	service.ch = make(chan []byte,10)
 	// Install the methods
+
 	service.method = suitableMethods(service.typ)
 
 	if len(service.method) == 0 {
-		return nil, fmt.Errorf("%s has no methods ", name)
+		//return nil, fmt.Errorf("%s has no methods ", name)
 	}
-	client, err := rpc.NewRedisClient("server_test", "redis://root@192.168.5.137/6")
+	client, err := rpc.NewRedisClient(fmt.Sprintf("server_test:%s",name), "redis://root@192.168.5.137/6")
 	if err != nil {
 		return nil, err
 	}
-	server, err := rpc.NewRpcServer("server_test", "redis://root@192.168.5.137/6")
+	server, err := rpc.NewRpcServer(fmt.Sprintf("server_test:%s",name), "redis://root@192.168.5.137/6",service.ch)
 	if err != nil {
 		return nil, err
 	}
 	service.rpcClient = client
 	service.rpcServer = server
+	go service.handler()
 	logger.ZapLog.Error("service:", zap.String("servicePath", service.name))
 	return service, nil
 }
@@ -105,8 +106,8 @@ func (s *Service) Register(rcv module.Module) error {
 
 	service, err := newService(rcv)
 	if err != nil {
-		logger.ZapLog.Fatal(err.Error())
-		return err
+		//logger.ZapLog.Fatal(err.Error())
+		//return err
 	}
 	service.isGo = false
 	s.serviceMap[service.name] = service
@@ -122,8 +123,8 @@ func (s *Service) RegisterGo(rcv module.Module) error {
 
 	service, err := newService(rcv)
 	if err != nil {
-		logger.ZapLog.Fatal(err.Error())
-		return err
+		//logger.ZapLog.Fatal(err.Error())
+		//return err
 	}
 	service.isGo = true
 	s.serviceMap[service.name] = service
@@ -234,44 +235,64 @@ func (s *Service) getService(name string) *service {
 //	return
 //}
 
-func (s *Service)Call(path,method string,args ...interface{})  {
-		defer func() {
-			if r := recover(); r != nil {
-				var rn = ""
-				switch r.(type) {
+//func (s *Service)Call(path,method string,args ...interface{})  {
+//		defer func() {
+//			if r := recover(); r != nil {
+//				var rn = ""
+//				switch r.(type) {
+//
+//				case string:
+//					rn = r.(string)
+//				case error:
+//					rn = r.(error).Error()
+//				}
+//				logger.ZapLog.Error(rn)
+//				buff := make([]byte, 1024)
+//				runtime.Stack(buff, false)
+//				logger.ZapLog.Error(string(buff))
+//			}
+//		}()
+//
+//	logger.ZapLog.Info("handlerRequest:", zap.String("servicePath", path), zap.String("serviceMethod", method), zap.Any("args", args))
+//
+//	ser := s.getService(path)
+//	if ser == nil {
+//		logger.ZapLog.Warn("service is not exist", zap.String("service name", path))
+//		return
+//	}
+//
+//	mty := ser.method[method]
+//	if mty == nil {
+//		logger.ZapLog.Warn("service method is not exist", zap.String("service method", method))
+//		return
+//	}
+//	in := make([]reflect.Value,0)
+//	for _,arg := range args {
+//		in = append(in,reflect.ValueOf(arg))
+//	}
+//	if ser.isGo {
+//		go ser.call(mty, in)
+//	} else {
+//		ser.call(mty,in)
+//	}
+//}
 
-				case string:
-					rn = r.(string)
-				case error:
-					rn = r.(error).Error()
-				}
-				logger.ZapLog.Error(rn)
-				buff := make([]byte, 1024)
-				runtime.Stack(buff, false)
-				logger.ZapLog.Error(string(buff))
-			}
-		}()
-
-	logger.ZapLog.Info("handlerRequest:", zap.String("servicePath", path), zap.String("serviceMethod", method), zap.Any("args", args))
-
+func(s *Service)CallNR (path, method string, args ...interface{})  {
 	ser := s.getService(path)
 	if ser == nil {
 		logger.ZapLog.Warn("service is not exist", zap.String("service name", path))
 		return
 	}
 
-	mty := ser.method[method]
-	if mty == nil {
-		logger.ZapLog.Warn("service method is not exist", zap.String("service method", method))
-		return
+	argsType := make([]string,len(args))
+	params := make([][]byte,len(args))
+	var err error
+	for i,arg := range args {
+		argsType[i],params[i],err = ArgsTypeAnd2Bytes(arg)
+		if err != nil {
+			return
+		}
 	}
-	in := make([]reflect.Value,0)
-	for _,arg := range args {
-		in = append(in,reflect.ValueOf(arg))
-	}
-	if ser.isGo {
-		go ser.call(mty, in)
-	} else {
-		ser.call(mty,in)
-	}
+
+	ser.CallNR(method,argsType,params)
 }
