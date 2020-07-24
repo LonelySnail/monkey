@@ -1383,3 +1383,51 @@
 {"level":"error","time":"2020-07-23T18:23:13.659+0800","line":"E:/project/monkey/service/service.go:96","msg":"service:","servicePath":"gate"}
 {"level":"error","time":"2020-07-23T18:23:13.659+0800","line":"E:/project/monkey/service/service.go:96","msg":"service:","servicePath":"login"}
 {"level":"info","time":"2020-07-23T18:23:22.257+0800","line":"E:/project/monkey/app/app.go:79","msg":"monkey closing down (signal: interrupt)"}
+{"level":"info","time":"2020-07-24T09:39:22.460+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T09:39:22.499+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T09:39:22.499+0800","line":"E:/project/monkey/service/service.go:96","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T09:39:22.500+0800","line":"E:/project/monkey/service/service.go:96","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:24:13.914+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:24:13.943+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:24:13.943+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:24:13.944+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:25:51.726+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:25:51.756+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:25:51.757+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:25:51.757+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:26:28.791+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:26:28.827+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:26:28.828+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:26:28.828+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:26:29.617+0800","line":"E:/project/monkey/app/app.go:79","msg":"monkey closing down (signal: interrupt)"}
+{"level":"info","time":"2020-07-24T10:26:33.062+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:26:33.101+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:26:33.102+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:26:33.102+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:27:33.325+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:27:33.355+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:27:33.356+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:27:33.356+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:27:44.960+0800","line":"E:/project/monkey/app/app.go:79","msg":"monkey closing down (signal: interrupt)"}
+{"level":"info","time":"2020-07-24T10:28:17.458+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:28:17.489+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:28:17.489+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:28:17.489+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:28:27.201+0800","line":"E:/project/monkey/app/app.go:79","msg":"monkey closing down (signal: interrupt)"}
+{"level":"info","time":"2020-07-24T10:30:01.470+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:30:01.499+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:30:01.500+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:30:01.500+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:32:12.909+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:32:12.946+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:32:12.947+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:32:12.947+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:34:43.592+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:34:43.624+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:34:43.624+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:34:43.624+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:35:50.268+0800","line":"E:/project/monkey/logger/logger.go:53","msg":"ZapLog success"}
+{"level":"info","time":"2020-07-24T10:35:50.315+0800","line":"E:/project/monkey/gate/network/tcp_server.go:31","msg":"TCP Listen ::3598"}
+{"level":"error","time":"2020-07-24T10:35:50.315+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"gate"}
+{"level":"error","time":"2020-07-24T10:35:50.315+0800","line":"E:/project/monkey/service/service_handler.go:83","msg":"service:","servicePath":"login"}
+{"level":"info","time":"2020-07-24T10:36:02.937+0800","line":"E:/project/monkey/app/app.go:79","msg":"monkey closing down (signal: interrupt)"}

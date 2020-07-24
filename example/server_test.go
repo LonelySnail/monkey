@@ -59,7 +59,7 @@ func (l *Login) GetApp() module.IDefaultApp {
 func (l *Login) Login(session module.IGateSession,arg string) (err error) {
 	fmt.Println(arg, "666666")
 	//a, _ := json.Marshal("hello world")
-	//session.SendMsg(a)
+	session.Send("hello world")
 	return
 }
 func TestServer(t *testing.T) {

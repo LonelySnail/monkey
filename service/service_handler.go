@@ -3,9 +3,13 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/LonelySnail/monkey/logger"
 	"github.com/LonelySnail/monkey/module"
 	"github.com/LonelySnail/monkey/rpc"
 	utils "github.com/LonelySnail/monkey/util"
+	"go.uber.org/zap"
+	"errors"
+	"runtime"
 
 	//utils "github.com/LonelySnail/monkey/util"
 	"reflect"
@@ -42,6 +46,43 @@ type functionType struct {
 	ReplyType reflect.Type
 }
 
+func newService(rcv module.Module) (*service, error) {
+	service := new(service)
+	service.typ = reflect.TypeOf(rcv)
+	service.rcv = reflect.ValueOf(rcv)
+	name := rcv.GetName()
+	if name == "" {
+		name = reflect.Indirect(service.rcv).Type().Name() // Type
+	}
+	if name == "" {
+		return nil, errors.New("name is empty")
+	}
+
+	if rcv.GetApp() == nil {
+		return nil,errors.New("app is nil")
+	}
+	service.app = rcv.GetApp()
+	service.name = name
+	service.ch = make(chan []byte,10)
+	service.method = suitableMethods(service.typ)
+	if len(service.method) == 0 {
+		return nil, fmt.Errorf("%s has no methods ", name)
+	}
+	client, err := rpc.NewRedisClient(fmt.Sprintf("server_test:%s",name), "redis://root@192.168.5.137/6")
+	if err != nil {
+		return nil, err
+	}
+	server, err := rpc.NewRpcServer(fmt.Sprintf("server_test:%s",name), "redis://root@192.168.5.137/6",service.ch)
+	if err != nil {
+		return nil, err
+	}
+	service.rpcClient = client
+	service.rpcServer = server
+	go service.handler()
+	logger.ZapLog.Error("service:", zap.String("servicePath", service.name))
+	return service, nil
+}
+
 
 func (s *service) CallNR(method string,argsType []string,args [][]byte)  {
 	msg := &rpc.RpcMsg{
@@ -67,22 +108,22 @@ func (s *service)handler()  {
 }
 
 func (s *service)call(msg *rpc.RpcMsg) error {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		var rn = ""
-	//		switch r.(type) {
-	//
-	//		case string:
-	//			rn = r.(string)
-	//		case error:
-	//			rn = r.(error).Error()
-	//		}
-	//		logger.ZapLog.Error(rn)
-	//		buff := make([]byte, 1024)
-	//		runtime.Stack(buff, false)
-	//		logger.ZapLog.Error(string(buff))
-	//	}
-	//}()
+	defer func() {
+		if r := recover(); r != nil {
+			var rn = ""
+			switch r.(type) {
+
+			case string:
+				rn = r.(string)
+			case error:
+				rn = r.(error).Error()
+			}
+			logger.ZapLog.Error(rn)
+			buff := make([]byte, 1024)
+			runtime.Stack(buff, false)
+			logger.ZapLog.Error(string(buff))
+		}
+	}()
 
 	mty := s.method[msg.Method]
 	if mty == nil {
@@ -95,7 +136,7 @@ func (s *service)call(msg *rpc.RpcMsg) error {
 	in[0]=s.rcv
 
 	for i,typ := range msg.ArgsType {
-		ty,err := Bytes2Args(nil,typ,args[i])
+		ty,err := Bytes2Args(s.app,typ,args[i])
 		if err != nil {
 			return err
 		}

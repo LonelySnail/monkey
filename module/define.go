@@ -6,7 +6,6 @@ type IDefaultApp interface {
 	OnStop()
 	GetTcpAddr() string
 	GetWSAddr() string
-	RequestCall(args [][]byte)
 	GetSerializeType()byte
 	Call(path, method string, args ...interface{})
 	CallNR(path, method string, args ...interface{})
@@ -25,6 +24,7 @@ type Module interface {
 //}
 
 type IGate interface {
+	GetApp()IDefaultApp
 	Connect(session IGateSession)
 	DisConnect(session IGateSession)
 }
@@ -34,6 +34,7 @@ type IGateSession interface {
 	GetIP() string
 	GetNetWork() string
 	SendMsg(payload []byte) (int, error)
+	Send(payload interface{})
 }
 
 //  session 代理

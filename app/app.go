@@ -118,14 +118,6 @@ func (app *DefaultApp) OnStop() {
 
 }
 
-func (app *DefaultApp) RequestCall(args [][]byte) {
-	//app.service.HandlerRequest(args)
-}
-
-func (app *DefaultApp) RequestCallGetSerializeType()byte{
-	return app.options.SerializeType
-}
-
 func (app *DefaultApp) Invoke(path, method string, args ...interface{}) {
 
 }
@@ -142,3 +134,6 @@ func (app *DefaultApp) CallNR(path, method string, args ...interface{}) {
 	app.service.CallNR(path,method,args...)
 }
 
+func  (app *DefaultApp)BDRegisterGo(path,method string,args ...interface{})  {
+
+}

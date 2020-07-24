@@ -1,6 +1,7 @@
 package gate
 
 import (
+	"encoding/json"
 	"github.com/LonelySnail/monkey/agent"
 	"github.com/LonelySnail/monkey/gate/network"
 	"github.com/LonelySnail/monkey/gate/sessions"
@@ -82,4 +83,15 @@ func (gt *Gate) DisConnect(a module.IGateSession) {
 
 func (gt *Gate) SetAgentProxy(proxy module.ISessionProxy) {
 	gt.agentProxy = proxy
+}
+
+func(gt *Gate)Send (ID string,payload string)  error{
+	session,ok := gt.manage.GetSession(ID)
+	if !ok {
+
+		return nil
+	}
+	p,_:= json.Marshal(payload)
+	session.SendMsg(p)
+	return nil
 }

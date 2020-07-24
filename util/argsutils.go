@@ -3,10 +3,7 @@ package util
 import (
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
-	"github.com/LonelySnail/monkey/module"
 	"math"
-	"reflect"
 )
 
 var (
@@ -22,94 +19,6 @@ var (
 	MAP     = "map"     //map[string]interface{}
 	Session = "session"
 )
-
-func ArgsTypeAnd2Bytes(arg interface{}) (string, []byte, error) {
-	if arg == nil {
-		return NULL, nil, nil
-	}
-	switch v2 := arg.(type) {
-	case []uint8:
-		return BYTES, v2, nil
-	}
-	switch v2 := arg.(type) {
-	case nil:
-		return NULL, nil, nil
-	case string:
-		return STRING, []byte(v2), nil
-	case bool:
-		return BOOL, BoolToBytes(v2), nil
-	case int32:
-		return INT, Int32ToBytes(v2), nil
-	case int64:
-		return LONG, Int64ToBytes(v2), nil
-	case float32:
-		return FLOAT,Float32ToBytes(v2), nil
-	case float64:
-		return DOUBLE,Float64ToBytes(v2), nil
-	case []byte:
-		return BYTES, v2, nil
-	case map[string]interface{}:
-		bytes, err := MapToBytes(v2)
-		if err != nil {
-			return MAP, nil, err
-		}
-		return MAP, bytes, nil
-	case map[string]string:
-		bytes, err := MapToBytesString(v2)
-		if err != nil {
-			return MAPSTR, nil, err
-		}
-		return MAPSTR, bytes, nil
-
-	default:
-		bytes,err := json.Marshal(arg)
-		if err != nil {
-			return Session, nil, err
-		}
-		return Session,bytes,err
-	}
-	return "", nil, fmt.Errorf("Args2Bytes [%s] not registered structure type", reflect.TypeOf(arg))
-}
-
-func Bytes2Args(app module.IDefaultApp, argsType string, args []byte) (interface{}, error) {
-	switch argsType {
-	case NULL:
-		return nil, nil
-	case STRING:
-		return string(args), nil
-	case BOOL:
-		return BytesToBool(args), nil
-	case INT:
-		return BytesToInt32(args), nil
-	case LONG:
-		return BytesToInt64(args), nil
-	case FLOAT:
-		return BytesToFloat32(args), nil
-	case DOUBLE:
-		return BytesToFloat64(args), nil
-	case BYTES:
-		return args, nil
-	case MAP:
-		mps, errs := BytesToMap(args)
-		if errs != nil {
-			return nil, errs
-		}
-		return mps, nil
-	case MAPSTR:
-		mps, errs := BytesToMapString(args)
-		if errs != nil {
-			return nil, errs
-		}
-		return mps, nil
-
-	default:
-
-		//a := new(module.Message)
-		//err := json.Unmarshal(args,a)
-		//return a,err
-	}
-	return nil, fmt.Errorf("Bytes2Args [%s] not registered", argsType)
-}
 
 // BoolToBytes bool->bytes
 func BoolToBytes(v bool) []byte {

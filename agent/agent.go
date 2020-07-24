@@ -2,6 +2,7 @@ package agent
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"github.com/LonelySnail/monkey/agent/packet"
 	"github.com/LonelySnail/monkey/codec"
@@ -40,6 +41,14 @@ func NewAgent(app module.IDefaultApp, conn network.Conn) *Agent {
 	return &Agent{app: app, conn: conn, maxPackSize: 65535}
 }
 
+func NewGateSession(app module.IDefaultApp,session []byte) (*Agent,error) {
+	a := new(Agent)
+	ses := new(SessionAgent)
+	err := json.Unmarshal(session,ses)
+	a.app = app
+	a.session = ses
+	return a,err
+}
 func (a *Agent) OnInit(gt module.IGate) error {
 	a.r = bufio.NewReaderSize(a.conn, 256)
 	a.w = bufio.NewWriterSize(a.conn, 256)
@@ -193,6 +202,6 @@ func (a *Agent) SendMsg(p []byte) (int, error) {
 	return a.w.Write(p)
 }
 
-func (a *Agent) Send(p []byte) {
-	a.app.Call("gate", "Send", a.GetSessionID(),p)
+func (a *Agent) Send(p interface{}) {
+	a.app.CallNR("gate", "Send", a.GetSessionID(),p)
 }
