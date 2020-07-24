@@ -20,6 +20,7 @@ type Message struct {
 	ServiceMethod string
 	Payload      interface{}
 }
+
 type Agent struct {
 	conn              network.Conn
 	r                 *bufio.Reader

@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"fmt"
 	"github.com/LonelySnail/monkey/logger"
 	"github.com/LonelySnail/monkey/util"
 	"github.com/gomodule/redigo/redis"
@@ -61,15 +60,8 @@ func (s *RedisServer) RequestHandler(ch chan []byte) {
 		defer conn.Close()
 		result, err := conn.Do("brpop", s.queueName, 0)
 		if err == nil && result != nil {
-			fmt.Println(string(result.([]interface{})[1].([]byte)),"**********")
 			body := result.([]interface{})[1].([]byte)
 			ch <- body
-			//rpcInfo, err := s.Unmarshal(result.([]interface{})[1].([]byte))
-			//if err == nil {
-			//	fmt.Println()
-			//} else {
-			//	logger.ZapLog.Error("error ", err)
-			//}
 		} else if err != nil {
 			logger.ZapLog.Warn(err.Error(), zap.String("url", s.url), zap.String("queueName", s.queueName))
 			s.closePoll()

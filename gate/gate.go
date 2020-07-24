@@ -85,7 +85,7 @@ func (gt *Gate) SetAgentProxy(proxy module.ISessionProxy) {
 	gt.agentProxy = proxy
 }
 
-func(gt *Gate)Send (ID string,payload string)  error{
+func(gt *Gate)Send (ID,payload string)  error{
 	session,ok := gt.manage.GetSession(ID)
 	if !ok {
 

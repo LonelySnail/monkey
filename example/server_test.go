@@ -1,6 +1,7 @@
 package example
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/LonelySnail/monkey"
 	"github.com/LonelySnail/monkey/app"
@@ -58,8 +59,8 @@ func (l *Login) GetApp() module.IDefaultApp {
 
 func (l *Login) Login(session module.IGateSession,arg string) (err error) {
 	fmt.Println(arg, "666666")
-	//a, _ := json.Marshal("hello world")
-	session.Send("hello world")
+	a, _ := json.Marshal("hello world")
+	session.Send(a)
 	return
 }
 func TestServer(t *testing.T) {

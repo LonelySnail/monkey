@@ -71,41 +71,39 @@ func ArgsTypeAnd2Bytes(arg interface{}) (string, []byte, error) {
 	return "", nil, fmt.Errorf("Args2Bytes [%s] not registered structure type", reflect.TypeOf(arg))
 }
 
-func Bytes2Args(app module.IDefaultApp, argsType string, args []byte) (interface{}, error) {
+func Bytes2Args(app module.IDefaultApp, argsType string, arg []byte) (interface{}, error) {
 	switch argsType {
 	case NULL:
 		return nil, nil
 	case STRING:
-		return string(args), nil
+		return string(arg), nil
 	case BOOL:
-		return util.BytesToBool(args), nil
+		return util.BytesToBool(arg), nil
 	case INT:
-		return util.BytesToInt32(args), nil
+		return util.BytesToInt32(arg), nil
 	case LONG:
-		return util.BytesToInt64(args), nil
+		return util.BytesToInt64(arg), nil
 	case FLOAT:
-		return util.BytesToFloat32(args), nil
+		return util.BytesToFloat32(arg), nil
 	case DOUBLE:
-		return util.BytesToFloat64(args), nil
+		return util.BytesToFloat64(arg), nil
 	case BYTES:
-		return args, nil
+		return arg, nil
 	case MAP:
-		mps, errs := util.BytesToMap(args)
+		mps, errs := util.BytesToMap(arg)
 		if errs != nil {
 			return nil, errs
 		}
 		return mps, nil
 	case MAPSTR:
-		mps, errs := util.BytesToMapString(args)
+		mps, errs := util.BytesToMapString(arg)
 		if errs != nil {
 			return nil, errs
 		}
 		return mps, nil
 
 	default:
-
-
-		return agent.NewGateSession(app,args)
+		return agent.NewGateSession(app,arg)
 
 	}
 	return nil, fmt.Errorf("Bytes2Args [%s] not registered", argsType)
